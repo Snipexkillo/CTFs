@@ -29,7 +29,7 @@ This function does exactly what it says: gets a prime and a generator. What exac
 But that article is way too confusing to someone who has never taken abstract algebra (like me). So I shall direct you to something that makes slightly more [sense](https://en.wikipedia.org/wiki/Primitive_root_modulo_n).
 
 
-If you are still lost it is okay. In the context of this problem, where we will end up doing $g^{something} \bmod p$ (as shown in the next function), a generator is *an integer that can be turned into every other integer coprime to p, after doing it to the power of something\cdot. Since we are working with modular arithmetic, specifically mod p, we are working with every number between 1 and p - 1 (0 is not coprime to p). If you wanted to get a specific one of those numbers between 1 and p-1, there exists a number (lets call it a) that you could do g to the power of mod p in order to get that specific number. It just all depends on picking the right number a.
+If you are still lost it is okay. In the context of this problem, where we will end up doing $g^{something} \bmod p$ (as shown in the next function), a generator is *an integer that can be turned into every other integer coprime to p, after doing it to the power of something*. Since we are working with modular arithmetic, specifically mod p, we are working with every number between 1 and p - 1 (0 is not coprime to p). If you wanted to get a specific one of those numbers between 1 and p-1, there exists a number (lets call it a) that you could do g to the power of mod p in order to get that specific number. It just all depends on picking the right number a.
 
 
 A nice way to see it is with a table. Using mod p = 7 and g = 3
@@ -145,11 +145,12 @@ Okay we now know our objective. Let's go achieve it. Looking at $(g^{ak} \cdot i
 
 We're almost there. So we have $i2  \cdot  (i1)^{-a}$. What numbers do we actually know? Well we know g = 2. They gave us p earlier. They gave us A earlier. We also know A = $g^a$. Wait a second. That seems familier to what we want. If we were to say $i2 = A = g^a$ then we would get $g^a \cdot i1^{-a}$. The final step is to say that i1 = g. Then the expression becomes $g^a \cdot g^{-a}$ which equals 1. 
 
-That's the where all the math leads us. To simply using two numbers that they gave us at the beginning of the question. To clean up all of the horrendous math, all we have to do is give them 2 and whatever number they printed for A and in turn you will receive the number $4207564671745017061459002831657829961985417520046041547841180336049591837607722234018405874709347956760957$. You can simply using the pycryptodome module and do             
-```python 
-Crypto.Util.number.long_to_bytes(4207564671745017061459002831657829961985417520046041547841180336049591837607722234018405874709347956760957)
+That's the where all the math leads us. To simply using two numbers that they gave us at the beginning of the question. To clean up all of the horrendous math, all we have to do is give them 2 and whatever number they printed for A and in turn you will receive the number `4207564671745017061459002831657829961985417520046041547841180336049591837607722234018405874709347956760957`. You will need to convert this number to bytes using any method you prefer (I just used the pycryptodome module as shown below).    
+```python
+flag = 4207564671745017061459002831657829961985417520046041547841180336049591837607722234018405874709347956760957
+Crypto.Util.number.long_to_bytes(flag)
 ``` 
-to get the flag (or whatever method to turn integer into bytes) and you will receive the lovely flag:
+And in turn you will receive the lovely flag:
 
 ### ```b'uiuctf{h0m0m0rpi5sms_ar3_v3ry_fun!!11!!11!!}'```
 
