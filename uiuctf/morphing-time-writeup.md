@@ -85,7 +85,7 @@ def decrypt_setup(a, p):
 
     return decrypt
 ```
-Now this is your decryption function. It looks really similar to the encryption function. except now its will return $c2  \cdot  c1^{-a} \bmod p$. Although in modular arithmetic negative powers really mean inverses, the algebra will work out the same and it looks a tad prettier than me simply saying "inverse of $c1^a$ times m mod p. 
+Now this is your decryption function. It looks really similar to the encryption function. except now its will return $c2  \cdot  {(c1^{a})}^{-1} \bmod p$. Although in modular arithmetic negative powers really mean inverses, the algebra will work out the same and it looks a tad prettier than me simply saying "inverse of $c1^a$ times m mod p. 
 
 ## It's almost time
 ```python
@@ -118,32 +118,33 @@ We have now encrypted the flag (if you want to read the [function](#encryption-f
 
 ## It's Morphing Time
 ```python
-print("[$] Give A Ciphertext (i1, i2) to the Oracle:")
+print("[$] Give A Ciphertext (i_{1}, i_{2}) to the Oracle:")
     try:
-        i1 = input("[$]     i1 = ")
-        i1 = int(i1)
-        assert 1 < i1 < p - 1
+        i_{1} = input("[$]     i_{1} = ")
+        i_{1} = int(i_{1})
+        assert 1 < i_{1} < p - 1
 
-        i2 = input("[$]     i2 = ")
-        i2 = int(i2)
-        assert 1 < i2 < p - 1
+        i_{2} = input("[$]     i_{2} = ")
+        i_{2} = int(i_{2})
+        assert 1 < i_{2} < p - 1
     except:
         print("!! You've Lost Your Chance !!")
         exit(1)
 
     print("[$] Decryption of You-Know-What:")
-    m = decrypt((c1 * i1) % p, (c2 * i2) % p)
+    m = decrypt((c1 * i_{1}) % p, (c2 * i_{2}) % p)
     print(f"[$]     {m = }")
 ```
-This is where the problem gets interesting. You are allowed to give the program two numbers of your choosing, named c1_ and c2_. **I am going to refer to these numbers as i1 and i2 respectively just to guarantee that they will not get confused with c1 and c2**. They will then use decrypt with c1*i1 and c2*i2. The secret behind decryption relies on picking the proper numbers. But how do we do that?
-Let's substitute everything with whatever we know. We know $c1 = g^k \bmod p$, and $c2 = m \cdot {A}^{k} \bmod p$, we also know that $A = g^a \bmod p$. so $c2 = m \cdot {g}^{{a}^{k}} \bmod p$ or $c2 = m \cdot g^{ak} \bmod p$. We also know that we run the decryption function returns $c2  \cdot  c1^{-a} \bmod p$.
+This is where the problem gets interesting. You are allowed to give the program two numbers of your choosing, named c1_ and c2_. **I am going to refer to these numbers as $i_{1}$ and $i_{2}$ respectively just to guarantee that they will not get confused with c1 and c2**. They will then use decrypt with $c1 \cdot i_{1}$ and $c2 \cdot i_{2}$. The secret behind decryption relies on picking the proper numbers. But how do we do that?
+Let's substitute everything with whatever we know. We know $c1 = g^k \bmod p$, and $c2 = m \cdot {A}^{k} \bmod p$, we also know that $A = g^a \bmod p$. so $c2 = m \cdot {g}^{{a}^{k}} \bmod p$ or $c2 = m \cdot g^{ak} \bmod p$. We also know that we run the decryption function returns $c2  \cdot  {(c1^{a})}^{-1} \bmod p$.
 
-But wait a second, there's a sly trick involved here. The c1 and c2 mentioned like 3 seconds ago were multiplied with i1 and i2. So lets use that. The decryption function really returns $c2 \cdot i2 \cdot {c1 \cdot i1}^{-a}$. Then we input our other values of c2 and c1 and get $(m \cdot {g}^{ak}  \cdot  i2) \cdot (g^k  \cdot  i1)^{-a})$. Now if we were to say that i2 and i1 were 1, then everything would cancel and we would get m (which is our flag).
-However, we cannot do that because it checks that i1 and i2 are between 1 and p-1. Looking at the equation we have $(m \cdot g^{ak} \cdot i2) \cdot (g^k \cdot i1)^{-a})$ or $(m)(g^{ak}  \cdot i2) \cdot (g^k \cdot i1)^{-a})$. That means we want $(g^{a \cdot k} \cdot i2) \cdot (g^k \cdot i1)^(-a))$ to equal 1. 
+But wait a second, there's a sly trick involved here. The c1 and c2 mentioned like 3 seconds ago were multiplied with i_{1} and i_{2}. So lets use that. The decryption function really returns $c2 \cdot i_{2} \cdot {({c1 \cdot i_{1}}^{a})}^{-1}$. Then we input our other values of c2 and c1 and get $(m \cdot {g}^{ak}  \cdot  i_{2}) \cdot {({g^k \cdot i_{1}}^{a})}^{-1}$. Now if we were to say that $i_{2}$ and $i_{1}$ were 1, then everything would cancel and we would get m (which is our flag).
 
-Okay we now know our objective. Let's go achieve it. Looking at $(g^{ak} \cdot i2) \cdot (g^k \cdot i1)^{-a}) $ we can rewrite it as $(g^{a \cdot k} \cdot i2) \cdot (g^{-a \cdot k}  \cdot  i1^{-a}) = g^{ak}  \cdot  g^{-ak} \cdot i2 \cdot i1^{-a}$. Well, $g^{ak} \cdot g^{-ak} = g^{ak-ak} = g^0 = 1$. So $g^{ak} \cdot g^{-ak} \cdot i2 \cdot i1^{-a} = i2 \cdot i1^{-a}$.
+However, we cannot do that because the code checks if $i_{1}$ and $i_{2}$ are between 1 and p-1. Looking at the equation we have $(m \cdot g^{ak} \cdot i_{2}) \cdot {({g^k \cdot i_{1}}^{a})}^{-1}$ or $(m)(g^{ak}  \cdot i_{2}) \cdot {({g^k \cdot i_{1}}^{a})}^{-1}$. That means we want $(g^{a \cdot k} \cdot i_{2}) \cdot {({g^k \cdot i_{1}}^{a})}^{-1}$ to equal 1. 
 
-We're almost there. So we have $i2  \cdot  (i1)^{-a}$. What numbers do we actually know? Well we know g = 2. They gave us p earlier. They gave us A earlier. We also know A = $g^a$. Wait a second. That seems familier to what we want. If we were to say $i2 = A = g^a$ then we would get $g^a \cdot i1^{-a}$. The final step is to say that i1 = g. Then the expression becomes $g^a \cdot g^{-a}$ which equals 1. 
+Okay we now know our objective. Let's go achieve it. Looking at $(g^{ak} \cdot i_{2}) \cdot (g^k \cdot i_{1})^{-a}) $ we can rewrite it as $(g^{a \cdot k} \cdot i_{2}) \cdot (g^{-a \cdot k}  \cdot  i_{1}^{-a}) = g^{ak}  \cdot  g^{-ak} \cdot i_{2} \cdot i_{1}^{-a}$. Well, $g^{ak} \cdot g^{-ak} = g^{ak-ak} = g^0 = 1$. So $g^{ak} \cdot g^{-ak} \cdot i_{2} \cdot i_{1}^{-a} = i_{2} \cdot i_{1}^{-a}$.
+
+We're almost there. So we have $i_{2}  \cdot  (i_{1})^{-a}$. What numbers do we actually know? Well we know g = 2. They gave us p earlier. They gave us A earlier. We also know A = $g^a$. Wait a second. That seems familier to what we want. If we were to say $i_{2} = A = g^a$ then we would get $g^a \cdot i_{1}^{-a}$. The final step is to say that $i_{1}$ = g. Then the expression becomes $g^a \cdot g^{-a}$ which equals 1. 
 
 That's the where all the math leads us. To simply using two numbers that they gave us at the beginning of the question. To clean up all of the horrendous math, all we have to do is give them 2 and whatever number they printed for A and in turn you will receive the number `4207564671745017061459002831657829961985417520046041547841180336049591837607722234018405874709347956760957`. You will need to convert this number to bytes using any method you prefer (I just used the pycryptodome module as shown below).    
 ```python
