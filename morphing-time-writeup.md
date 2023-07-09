@@ -29,7 +29,7 @@ This function does exactly what it says: gets a prime and a generator. What exac
 But that article is way too confusing to someone who has never taken abstract algebra (like me). So I shall direct you to something that makes slightly more [sense](https://en.wikipedia.org/wiki/Primitive_root_modulo_n).
 
 
-If you are still lost it is okay. In the context of this problem, where we will end up doing $g^{something} \bmod p$ (as shown in the next function), a generator is *an integer that can be turned into every other integer coprime to p, after doing it to the power of something*. Since we are working with modular arithmetic, specifically mod p, we are working with every number between 1 and p - 1 (0 is not coprime to p). If you wanted to get a specific one of those numbers between 1 and p-1, there exists a number (lets call it a) that you could do g to the power of mod p in order to get that specific number. It just all depends on picking the right number a.
+If you are still lost it is okay. In the context of this problem, where we will end up doing $g^{something} \bmod p$ (as shown in the next function), a generator is *an integer that can be turned into every other integer coprime to p, after doing it to the power of something\cdot. Since we are working with modular arithmetic, specifically mod p, we are working with every number between 1 and p - 1 (0 is not coprime to p). If you wanted to get a specific one of those numbers between 1 and p-1, there exists a number (lets call it a) that you could do g to the power of mod p in order to get that specific number. It just all depends on picking the right number a.
 
 
 A nice way to see it is with a table. Using mod p = 7 and g = 3
@@ -71,7 +71,7 @@ def encrypt_setup(p, g, A):
 
     return encrypt
 ```
-For this you give it 4 numbers: p (which will be your random prime), g (your generator, aka 2), A, and m. Inside of the function, tt will generate yet another random integer k, and then return back to you **$c1 = g^k \bmod p$, and $c2 = m*A^k \bmod p$**. Keep track of this algebra, it's really important for later on.
+For this you give it 4 numbers: p (which will be your random prime), g (your generator, aka 2), A, and m. Inside of the function, tt will generate yet another random integer k, and then return back to you **$c1 = g^k \bmod p$, and $c2 = m \cdot A^k \bmod p$**. Keep track of this algebra, it's really important for later on.
 
 ## Decryption Function
 ```python
@@ -85,7 +85,7 @@ def decrypt_setup(a, p):
 
     return decrypt
 ```
-Now this is your decryption function. It looks really similar to the encryption function. except now its will return $c2 * c1^{-a} \bmod p$. Although in modular arithmetic negative powers really mean inverses, the algebra will work out the same and it looks a tad prettier than me simply saying "inverse of $c1^a$ times m mod p. 
+Now this is your decryption function. It looks really similar to the encryption function. except now its will return $c2  \cdot  c1^{-a} \bmod p$. Although in modular arithmetic negative powers really mean inverses, the algebra will work out the same and it looks a tad prettier than me simply saying "inverse of $c1^a$ times m mod p. 
 
 ## It's almost time
 ```python
@@ -114,7 +114,7 @@ The decrypt and encryption functions also are given all of these numbers (with n
     print(f"[$]     {c1 = }")
     print(f"[$]     {c2 = }")
 ```
-We have now encrypted the flag (if you want to read the [function](encryption-function) again, m would be the flag) and printed out c1 and c2. Remember that what we noted earlier was that $c1 = g^k \bmod p$, and $c2 = m*A^k \bmod p$. So however shall we get this flag?
+We have now encrypted the flag (if you want to read the [function](encryption-function) again, m would be the flag) and printed out c1 and c2. Remember that what we noted earlier was that $c1 = g^k \bmod p$, and $c2 = m \cdot A^k \bmod p$. So however shall we get this flag?
 
 ## It's Morphing Time
 ```python
@@ -136,14 +136,14 @@ print("[$] Give A Ciphertext (i1, i2) to the Oracle:")
     print(f"[$]     {m = }")
 ```
 This is where the problem gets interesting. You are allowed to give the program two numbers of your choosing, named c1_ and c2_. **I am going to refer to these numbers as i1 and i2 respectively just to guarantee that they will not get confused with c1 and c2**. They will then use decrypt with c1*i1 and c2*i2. The secret behind decryption relies on picking the proper numbers. But how do we do that?
-Let's substitute everything with whatever we know. We know $c1 = g^k \bmod p$, and $c2 = m*{A}^{k} \bmod p$, we also know that $A = g^a \bmod p$. so $c2 = m*{g}^{{a}^{k}} \bmod p$ or $c2 = m*g^{ak} \bmod p$. We also know that we run the decryption function returns $c2 * c1^{-a} \bmod p$.
+Let's substitute everything with whatever we know. We know $c1 = g^k \bmod p$, and $c2 = m \cdot {A}^{k} \bmod p$, we also know that $A = g^a \bmod p$. so $c2 = m \cdot {g}^{{a}^{k}} \bmod p$ or $c2 = m \cdot g^{ak} \bmod p$. We also know that we run the decryption function returns $c2  \cdot  c1^{-a} \bmod p$.
 
-But wait a second, there's a sly trick involved here. The c1 and c2 mentioned like 3 seconds ago were multiplied with i1 and i2. So lets use that. The decryption function really returns $(c2*i2)*{(c1*i1)}^{-a}$. Then we input our other values of c2 and c1 and get $(m*{g}^{ak} * i2)*(g^k * i1)^{-a})$. Now if we were to say that i2 and i1 were 1, then everything would cancel and we would get m (which is our flag).
-However, we cannot do that because it checks that i1 and i2 are between 1 and p-1. Looking at the equation we have $(m*g^{ak}*i2)*(g^k*i1)^{-a})$ or $(m)(g^{ak} *i2)*(g^k*i1)^{-a})$. That means we want $(g^{a*k}*i2)*(g^k*i1)^(-a))$ to equal 1. 
+But wait a second, there's a sly trick involved here. The c1 and c2 mentioned like 3 seconds ago were multiplied with i1 and i2. So lets use that. The decryption function really returns $c2 \cdot i2 \cdot {c1 \cdot i1}^{-a}$. Then we input our other values of c2 and c1 and get $(m \cdot {g}^{ak}  \cdot  i2) \cdot (g^k  \cdot  i1)^{-a})$. Now if we were to say that i2 and i1 were 1, then everything would cancel and we would get m (which is our flag).
+However, we cannot do that because it checks that i1 and i2 are between 1 and p-1. Looking at the equation we have $(m \cdot g^{ak} \cdot i2) \cdot (g^k \cdot i1)^{-a})$ or $(m)(g^{ak}  \cdot i2) \cdot (g^k \cdot i1)^{-a})$. That means we want $(g^{a \cdot k} \cdot i2) \cdot (g^k \cdot i1)^(-a))$ to equal 1. 
 
-Okay we now know our objective. Let's go achieve it. Looking at $(g^{ak}*i2)*(g^k*i1)^{-a}) $ we can rewrite it as $(g^{a*k}*i2)*(g^{-a*k} * i1^{-a}) = g^{ak} * g^{-ak}*i2*i1^{-a}$. Well, $g^{ak}*g^{-ak} = g^{ak-ak} = g^0 = 1$. So $g^{ak}*g^{-ak}*i2*i1^{-a} = i2*i1^{-a}$.
+Okay we now know our objective. Let's go achieve it. Looking at $(g^{ak} \cdot i2) \cdot (g^k \cdot i1)^{-a}) $ we can rewrite it as $(g^{a \cdot k} \cdot i2) \cdot (g^{-a \cdot k}  \cdot  i1^{-a}) = g^{ak}  \cdot  g^{-ak} \cdot i2 \cdot i1^{-a}$. Well, $g^{ak} \cdot g^{-ak} = g^{ak-ak} = g^0 = 1$. So $g^{ak} \cdot g^{-ak} \cdot i2 \cdot i1^{-a} = i2 \cdot i1^{-a}$.
 
-We're almost there. So we have $i2 * (i1)^{-a}$. What numbers do we actually know? Well we know g = 2. They gave us p earlier. They gave us A earlier. We also know A = $g^a$. Wait a second. That seems familier to what we want. If we were to say $i2 = A = g^a$ then we would get $g^a*i1^{-a}$. The final step is to say that i1 = g. Then the expression becomes $g^a*g^{-a}$ which equals 1. 
+We're almost there. So we have $i2  \cdot  (i1)^{-a}$. What numbers do we actually know? Well we know g = 2. They gave us p earlier. They gave us A earlier. We also know A = $g^a$. Wait a second. That seems familier to what we want. If we were to say $i2 = A = g^a$ then we would get $g^a \cdot i1^{-a}$. The final step is to say that i1 = g. Then the expression becomes $g^a \cdot g^{-a}$ which equals 1. 
 
 That's the where all the math leads us. To simply using two numbers that they gave us at the beginning of the question. To clean up all of the horrendous math, all we have to do is give them 2 and whatever number they printed for A and in turn you will receive the number $4207564671745017061459002831657829961985417520046041547841180336049591837607722234018405874709347956760957$. You can simply using the pycryptodome module and do             
 ```python 
