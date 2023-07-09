@@ -114,7 +114,7 @@ The decrypt and encryption functions also are given all of these numbers (with n
     print(f"[$]     {c1 = }")
     print(f"[$]     {c2 = }")
 ```
-We have now encrypted the flag (if you want to read the [function](encryption-function) again, m would be the flag) and printed out c1 and c2. Remember that what we noted earlier was that $c1 = g^k \bmod p$, and $c2 = m \cdot A^k \bmod p$. So however shall we get this flag?
+We have now encrypted the flag (if you want to read the [function](#encryption-function) again, m would be the flag) and printed out c1 and c2. Remember that what we noted earlier was that $c1 = g^k \bmod p$, and $c2 = m \cdot A^k \bmod p$. So however shall we get this flag?
 
 ## It's Morphing Time
 ```python
